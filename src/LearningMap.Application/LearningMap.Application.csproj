@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Application = use cases (commands/queries) + the INTERFACES they need.
+    It knows nothing about SQL Server or Azure; Infrastructure implements the interfaces.
+  -->
+
+  <ItemGroup>
+    <!-- Gives us IFormFile, StatusCodes, ILogger. (SafeSpace uses the old Microsoft.AspNetCore.Http.Abstractions 2.3.0 package for this; a FrameworkReference is the modern way.) -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Same versions as SafeSpace.User.Application -->
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
+    <PackageReference Include="MediatR" Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LearningMap.Domain\LearningMap.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

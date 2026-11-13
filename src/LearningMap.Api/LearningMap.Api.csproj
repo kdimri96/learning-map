@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <!-- Enables `dotnet user-secrets` for this project (secrets live in %APPDATA%\Microsoft\UserSecrets\<id>, NOT in the repo). -->
+    <UserSecretsId>learning-map-api-3c1e9f2a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Same versions as SafeSpace.User.Api -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.15" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+    <!-- Needed by the `dotnet ef` tool to create migrations from this startup project. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LearningMap.Application\LearningMap.Application.csproj" />
+    <ProjectReference Include="..\LearningMap.Infrastructure\LearningMap.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

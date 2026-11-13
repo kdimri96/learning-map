@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Domain = the core business objects. It references NOTHING (no EF, no ASP.NET).
+    Every other project depends on Domain; Domain depends on no one.
+  -->
+
+</Project>

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Infrastructure = the "how": SQL Server (EF Core + Dapper), Azure Blob, Argon2, JWT.
+    It implements the interfaces declared in Application.
+  -->
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Same versions as SafeSpace -->
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
+    <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="Konscious.Security.Cryptography.Argon2" Version="1.3.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.4" />
+    <!--
+      Token creation. Pinned to the same 7.x line that Microsoft.AspNetCore.Authentication.JwtBearer 8.0.x uses
+      for validation. Mixing 7.x and 8.x Microsoft.IdentityModel.* packages is a classic cause of
+      "IDX10500: Signature validation failed" at runtime.
+    -->
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LearningMap.Application\LearningMap.Application.csproj" />
+    <ProjectReference Include="..\LearningMap.Domain\LearningMap.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

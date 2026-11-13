@@ -1,0 +1,161 @@
+# Run these with the "REST Client" VS Code extension (click "Send Request" above each block)
+# or from Visual Studio. Run them top to bottom: login first, then the rest reuse its token.
+
+@baseUrl = https://localhost:7080
+@adminEmail = admin@learningmap.local
+# Must match what you set with: dotnet user-secrets set "SeedAdmin:Password" "..."
+@adminPassword = Admin#12345
+
+### 1. Health check (no auth)
+GET {{baseUrl}}/health
+
+### 2. Login as the seeded admin -> copies the token into {{token}}
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+###
+@token = {{login.response.body.$.data.token}}
+
+### 3. Who am I? (shows the claims inside the JWT)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### 4. Calling a protected endpoint WITHOUT a token -> 401
+GET {{baseUrl}}/employees
+
+### 5. Create an employee WITH an image (multipart/form-data)
+# @name created
+POST {{baseUrl}}/employees
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=LearningMapBoundary
+
+--LearningMapBoundary
+Content-Disposition: form-data; name="FirstName"
+
+Asha
+--LearningMapBoundary
+Content-Disposition: form-data; name="LastName"
+
+Rao
+--LearningMapBoundary
+Content-Disposition: form-data; name="Email"
+
+asha.rao@example.com
+--LearningMapBoundary
+Content-Disposition: form-data; name="PhoneNumber"
+
++919876543210
+--LearningMapBoundary
+Content-Disposition: form-data; name="Department"
+
+Engineering
+--LearningMapBoundary
+Content-Disposition: form-data; name="Designation"
+
+Backend Developer
+--LearningMapBoundary
+Content-Disposition: form-data; name="DateOfJoining"
+
+2025-04-01
+--LearningMapBoundary
+Content-Disposition: form-data; name="Image"; filename="employee.png"
+Content-Type: image/png
+
+< ../../samples/employee.png
+--LearningMapBoundary--
+
+###
+@employeeGuid = {{created.response.body.$.data.employeeGuid}}
+
+### 6. List (search + paging)
+GET {{baseUrl}}/employees?search=asha&pageNumber=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 7. Get one (open data.imageUrl in a browser to see the picture)
+GET {{baseUrl}}/employees/{{employeeGuid}}
+Authorization: Bearer {{token}}
+
+### 8. Update: change designation and REMOVE the image
+PUT {{baseUrl}}/employees/{{employeeGuid}}
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=LearningMapBoundary
+
+--LearningMapBoundary
+Content-Disposition: form-data; name="FirstName"
+
+Asha
+--LearningMapBoundary
+Content-Disposition: form-data; name="LastName"
+
+Rao
+--LearningMapBoundary
+Content-Disposition: form-data; name="Email"
+
+asha.rao@example.com
+--LearningMapBoundary
+Content-Disposition: form-data; name="Department"
+
+Engineering
+--LearningMapBoundary
+Content-Disposition: form-data; name="Designation"
+
+Senior Backend Developer
+--LearningMapBoundary
+Content-Disposition: form-data; name="DateOfJoining"
+
+2025-04-01
+--LearningMapBoundary
+Content-Disposition: form-data; name="RemoveImage"
+
+true
+--LearningMapBoundary--
+
+### 9. Validation errors -> 400 with a list of problems
+POST {{baseUrl}}/employees
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=LearningMapBoundary
+
+--LearningMapBoundary
+Content-Disposition: form-data; name="FirstName"
+
+
+--LearningMapBoundary
+Content-Disposition: form-data; name="Email"
+
+not-an-email
+--LearningMapBoundary--
+
+### 10. Department summary (Dapper + stored procedure)
+GET {{baseUrl}}/employees/department-summary
+Authorization: Bearer {{token}}
+
+### 11. Soft delete
+DELETE {{baseUrl}}/employees/{{employeeGuid}}
+Authorization: Bearer {{token}}
+
+### 12. Register a new user, log in as them, and delete -> 200 (any logged-in user can manage employees)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Read Only",
+  "email": "viewer@learningmap.local",
+  "password": "Viewer#12345"
+}
+
+###
+# @name viewerLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{ "email": "viewer@learningmap.local", "password": "Viewer#12345" }
+
+###
+DELETE {{baseUrl}}/employees/{{employeeGuid}}
+Authorization: Bearer {{viewerLogin.response.body.$.data.token}}

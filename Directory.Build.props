@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    Settings shared by every .csproj under this folder (MSBuild picks this file up automatically).
+    SafeSpace repeats these three lines in each .csproj; this is the same thing in one place.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+</Project>

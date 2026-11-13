@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+*.user
+logs/
+.azurite/
+TestResults/
+node_modules/
+dist/
